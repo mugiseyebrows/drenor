@@ -31,9 +31,9 @@ jobs:
       run: ./install.sh
     - name: zip
       shell: cmd
-      run: 7z a OpenSSL-${{ matrix.tag }}.zip OpenSSL
+      run: 7z a ${{ matrix.tag }}.zip OpenSSL
     - name: upload
       uses: actions/upload-artifact@v3
       with:
-        name: OpenSSL-${{ matrix.tag }}
-        path: OpenSSL-${{ matrix.tag }}.zip
+        name: ${{ matrix.tag }}
+        path: ${{ matrix.tag }}.zip

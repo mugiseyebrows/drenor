@@ -6,8 +6,8 @@ def main
     tag = github_matrix([OpenSSL_1_1_1n])
     github_checkout()
     github_setup_msys2(:update=false, :install=base-devel mingw-w64-i686-gcc git)
-    github_run(./build.sh ${{ matrix.tag }}, :s=msys2)
-    github_run(zip a OpenSSL-${{ matrix.tag }}.zip OpenSSL)
+    github_run(./build.sh ${{ matrix.tag }}, :shell=msys2, :name=build)
+    github_run(7z a OpenSSL-${{ matrix.tag }}.zip OpenSSL, :name=zip)
     github_upload(OpenSSL-${{ matrix.tag }}.zip)
 
 github_workflow 1

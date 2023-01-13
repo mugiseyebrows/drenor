@@ -17,13 +17,15 @@ jobs:
         msystem: MINGW32
         install: base-devel mingw-w64-i686-gcc git
         update: false
-    - shell: msys2 {0}
+    - name: build
+      shell: msys2 {0}
       env:
         MSYSTEM: MINGW32
         CHERE_INVOKING: 'yes'
       run: ./build.sh ${{ matrix.tag }}
-    - shell: cmd
-      run: zip a OpenSSL-${{ matrix.tag }}.zip OpenSSL
+    - name: zip
+      shell: cmd
+      run: 7z a OpenSSL-${{ matrix.tag }}.zip OpenSSL
     - name: upload
       uses: actions/upload-artifact@v3
       with:

@@ -15,11 +15,12 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: MINGW32
-        install: base-devel mingw-w64-i686-toolchain
+        install: base-devel mingw-w64-i686-gcc git
         update: false
     - shell: msys2 {0}
       env:
         MSYSTEM: MINGW32
+        CHERE_INVOKING: 'yes'
       run: ./build.sh ${{ matrix.tag }}
     - shell: cmd
       run: zip a OpenSSL-${{ matrix.tag }}.zip OpenSSL

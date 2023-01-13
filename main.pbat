@@ -5,7 +5,7 @@ def main
     # tag = github_matrix([OpenSSL_0_9_5a-beta1, OpenSSL_0_9_6a-beta2, OpenSSL_0_9_6i, OpenSSL_0_9_7-beta5, OpenSSL_0_9_7i, OpenSSL_0_9_8-beta5, OpenSSL_0_9_8e, OpenSSL_0_9_8n, OpenSSL_0_9_8x, OpenSSL_1_0_0, OpenSSL_1_0_0a, OpenSSL_1_0_0k, OpenSSL_1_0_1, OpenSSL_1_0_1c, OpenSSL_1_0_1m, OpenSSL_1_0_2-beta1, OpenSSL_1_0_2d, OpenSSL_1_0_2n, OpenSSL_1_1_0-pre2, OpenSSL_1_1_0f, OpenSSL_1_1_1-pre3, OpenSSL_1_1_1d, OpenSSL_1_1_1n])
     tag = github_matrix([OpenSSL_1_1_1n])
     github_checkout()
-    github_setup_msys2(:update=false, :install=base-devel mingw-w64-i686-toolchain)
+    github_setup_msys2(:update=false, :install=base-devel mingw-w64-i686-gcc git)
     github_run(./build.sh ${{ matrix.tag }}, :s=msys2)
     github_run(zip a OpenSSL-${{ matrix.tag }}.zip OpenSSL)
     github_upload(OpenSSL-${{ matrix.tag }}.zip)

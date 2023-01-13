@@ -17,13 +17,13 @@ jobs:
         msystem: MINGW32
         install: base-devel mingw-w64-i686-gcc git
         update: false
-    - name: build
+    - name: build.sh
       shell: msys2 {0}
       env:
         MSYSTEM: MINGW32
         CHERE_INVOKING: 'yes'
       run: ./build.sh ${{ matrix.tag }}
-    - name: build
+    - name: install.sh
       shell: msys2 {0}
       env:
         MSYSTEM: MINGW32

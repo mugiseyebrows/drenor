@@ -23,6 +23,12 @@ jobs:
         MSYSTEM: MINGW32
         CHERE_INVOKING: 'yes'
       run: ./build.sh ${{ matrix.tag }}
+    - name: build
+      shell: msys2 {0}
+      env:
+        MSYSTEM: MINGW32
+        CHERE_INVOKING: 'yes'
+      run: ./install.sh
     - name: zip
       shell: cmd
       run: 7z a OpenSSL-${{ matrix.tag }}.zip OpenSSL

@@ -1,4 +1,4 @@
 #!/bin/bash
-cd openssl
+cd src
 make install || echo "ok"
 cd ..

@@ -1,8 +1,8 @@
 #!/bin/bash
 gcc -v
 perl -v
-git clone git://git.openssl.org/openssl.git
-cd openssl
+git clone git://git.openssl.org/openssl.git src
+cd src
 git checkout $1
 ./config --prefix="`pwd`/../OpenSSL" --openssldir=ssl --shared
 sed -i 's,-mno-cygwin,,' Makefile

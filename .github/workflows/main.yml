@@ -1,0 +1,30 @@
+name: main
+on: push
+jobs:
+  main:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        tag:
+        - OpenSSL_1_1_1n
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v3
+      name: checkout
+    - name: setup-msys2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW32
+        install: base-devel mingw-w64-i686-toolchain
+        update: false
+    - shell: msys2 {0}
+      env:
+        MSYSTEM: MINGW32
+      run: ./build.sh ${{ matrix.tag }}
+    - shell: cmd
+      run: zip a OpenSSL-${{ matrix.tag }}.zip OpenSSL
+    - name: upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: OpenSSL-${{ matrix.tag }}
+        path: OpenSSL-${{ matrix.tag }}.zip

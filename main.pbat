@@ -1,15 +1,33 @@
-
+def build shell msys2
+    gcc -v
+    perl -v
+    git clone git://git.openssl.org/openssl.git src
+    cd src
+    git checkout ${{ matrix.tag }}
+    ./config --prefix="`pwd`/../OpenSSL" --openssldir=ssl --shared
+    sed -i 's,-mno-cygwin,,' Makefile
+    sed -i 's,i486,i686,' Makefile
+    sed -i 's,0x333,0x400,' Makefile
+    make
+    cd ..
 
 def main
     # git tag | pygrep -i "openssl_[0-9]_[0-9]_[0-9]" | pynth -e 10
-    tag = github_matrix([OpenSSL_0_9_5a-beta1, OpenSSL_0_9_6a-beta2, OpenSSL_0_9_6i, OpenSSL_0_9_7-beta5, OpenSSL_0_9_7i, OpenSSL_0_9_8-beta5, OpenSSL_0_9_8e, OpenSSL_0_9_8n, OpenSSL_0_9_8x, OpenSSL_1_0_0, OpenSSL_1_0_0a, OpenSSL_1_0_0k, OpenSSL_1_0_1, OpenSSL_1_0_1c, OpenSSL_1_0_1m, OpenSSL_1_0_2-beta1, OpenSSL_1_0_2d, OpenSSL_1_0_2n, OpenSSL_1_1_0-pre2, OpenSSL_1_1_0f, OpenSSL_1_1_1-pre3, OpenSSL_1_1_1d, OpenSSL_1_1_1n])
-    #tag = github_matrix([OpenSSL_1_1_1n])
+    #tag = github_matrix([OpenSSL_0_9_5a-beta1, OpenSSL_0_9_6a-beta2, OpenSSL_0_9_6i, OpenSSL_0_9_7-beta5, OpenSSL_0_9_7i, OpenSSL_0_9_8-beta5, OpenSSL_0_9_8e, OpenSSL_0_9_8n, OpenSSL_0_9_8x, OpenSSL_1_0_0, OpenSSL_1_0_0a, OpenSSL_1_0_0k, OpenSSL_1_0_1, OpenSSL_1_0_1c, OpenSSL_1_0_1m, OpenSSL_1_0_2-beta1, OpenSSL_1_0_2d, OpenSSL_1_0_2n, OpenSSL_1_1_0-pre2, OpenSSL_1_1_0f, OpenSSL_1_1_1-pre3, OpenSSL_1_1_1d, OpenSSL_1_1_1n])
+    tag = github_matrix([OpenSSL_1_0_1m])
     github_checkout()
     github_setup_msys2(:update=false, :install=base-devel mingw-w64-i686-gcc git)
-    github_run(./build.sh ${{ matrix.tag }}, :shell=msys2, :name=build.sh)
-    github_run(./install.sh, :shell=msys2, :name=install.sh)
-    github_run(7z a ${{ matrix.tag }}.zip OpenSSL, :name=zip)
+    #github_run(./build.sh ${{ matrix.tag }}, :shell=msys2, :name=build.sh)
+    #github_run(./install.sh, :shell=msys2, :name=install.sh)
+    #github_run(7z a ${{ matrix.tag }}.zip OpenSSL, :name=zip)
+
+def zip
+    zip(OpenSSL, ${{ matrix.tag }}.zip)
     github_upload(${{ matrix.tag }}.zip)
+    github_release(${{ matrix.tag }}.zip)
 
 github_workflow 1
 msys2_msystem MINGW32
+zip_test 0
+
+order main build zip

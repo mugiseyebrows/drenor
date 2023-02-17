@@ -1,34 +1,15 @@
 name: main
 on: push
+env:
+  MSYSTEM: MINGW32
+  CHERE_INVOKING: 'yes'
 jobs:
   main:
     runs-on: windows-latest
     strategy:
       matrix:
         tag:
-        - OpenSSL_0_9_5a-beta1
-        - OpenSSL_0_9_6a-beta2
-        - OpenSSL_0_9_6i
-        - OpenSSL_0_9_7-beta5
-        - OpenSSL_0_9_7i
-        - OpenSSL_0_9_8-beta5
-        - OpenSSL_0_9_8e
-        - OpenSSL_0_9_8n
-        - OpenSSL_0_9_8x
-        - OpenSSL_1_0_0
-        - OpenSSL_1_0_0a
-        - OpenSSL_1_0_0k
-        - OpenSSL_1_0_1
-        - OpenSSL_1_0_1c
         - OpenSSL_1_0_1m
-        - OpenSSL_1_0_2-beta1
-        - OpenSSL_1_0_2d
-        - OpenSSL_1_0_2n
-        - OpenSSL_1_1_0-pre2
-        - OpenSSL_1_1_0f
-        - OpenSSL_1_1_1-pre3
-        - OpenSSL_1_1_1d
-        - OpenSSL_1_1_1n
       fail-fast: false
     steps:
     - uses: actions/checkout@v3
@@ -39,23 +20,30 @@ jobs:
         msystem: MINGW32
         install: base-devel mingw-w64-i686-gcc git
         update: false
-    - name: build.sh
+    - name: build
       shell: msys2 {0}
-      env:
-        MSYSTEM: MINGW32
-        CHERE_INVOKING: 'yes'
-      run: ./build.sh ${{ matrix.tag }}
-    - name: install.sh
-      shell: msys2 {0}
-      env:
-        MSYSTEM: MINGW32
-        CHERE_INVOKING: 'yes'
-      run: ./install.sh
+      run: |
+        gcc -v
+        perl -v
+        git clone git://git.openssl.org/openssl.git src
+        cd src
+        git checkout ${{ matrix.tag }}
+        ./config --prefix="`pwd`/../OpenSSL" --openssldir=ssl --shared
+        sed -i 's,-mno-cygwin,,' Makefile
+        sed -i 's,i486,i686,' Makefile
+        sed -i 's,0x333,0x400,' Makefile
+        make
+        cd ..
     - name: zip
       shell: cmd
-      run: 7z a ${{ matrix.tag }}.zip OpenSSL
+      run: 7z a -y "${{ matrix.tag }}.zip" OpenSSL
     - name: upload
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.tag }}
         path: ${{ matrix.tag }}.zip
+    - name: release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: ${{ matrix.tag }}.zip

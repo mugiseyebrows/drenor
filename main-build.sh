@@ -10,4 +10,5 @@ sed -i 's,-mno-cygwin,,' Makefile
 sed -i 's,i486,i686,' Makefile
 sed -i 's,0x333,0x400,' Makefile
 make
+make install
 cd ..
